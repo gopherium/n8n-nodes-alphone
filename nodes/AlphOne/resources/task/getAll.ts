@@ -1,0 +1,67 @@
+import type { INodeProperties } from 'n8n-workflow';
+
+export const getAllDescription: INodeProperties[] = [
+	{
+		displayName: 'Filter By',
+		name: 'filterBy',
+		type: 'options',
+		noDataExpression: true,
+		default: 'date',
+		description: 'AlphOne needs exactly one filter',
+		displayOptions: { show: { resource: ['task'], operation: ['getAll'] } },
+		options: [
+			{ name: 'Due On A Day', value: 'date', description: 'Your tasks due that day' },
+			{ name: 'Overdue Before', value: 'due_before', description: 'Your open tasks due earlier' },
+			{ name: 'Contact', value: 'contact_id', description: "A contact's tasks, across every assignee" },
+		],
+	},
+	{
+		displayName: 'Date',
+		name: 'date',
+		type: 'string',
+		default: '={{ $now.toFormat(\'yyyy-MM-dd\') }}',
+		placeholder: 'YYYY-MM-DD',
+		displayOptions: { show: { resource: ['task'], operation: ['getAll'], filterBy: ['date'] } },
+		routing: { request: { qs: { date: '={{$value}}' } } },
+	},
+	{
+		displayName: 'Due Before',
+		name: 'dueBefore',
+		type: 'string',
+		default: '={{ $now.toFormat(\'yyyy-MM-dd\') }}',
+		placeholder: 'YYYY-MM-DD',
+		displayOptions: { show: { resource: ['task'], operation: ['getAll'], filterBy: ['due_before'] } },
+		routing: { request: { qs: { due_before: '={{$value}}' } } },
+	},
+	{
+		displayName: 'Contact ID',
+		name: 'contactId',
+		type: 'string',
+		default: '',
+		displayOptions: { show: { resource: ['task'], operation: ['getAll'], filterBy: ['contact_id'] } },
+		routing: { request: { qs: { contact_id: '={{$value}}' } } },
+	},
+	{
+		displayName: 'Status',
+		name: 'status',
+		type: 'options',
+		default: 'open',
+		displayOptions: { show: { resource: ['task'], operation: ['getAll'] } },
+		options: [
+			{ name: 'Open', value: 'open' },
+			{ name: 'Done', value: 'done' },
+			{ name: 'All', value: 'all' },
+		],
+		routing: { request: { qs: { status: '={{$value}}' } } },
+	},
+	{
+		displayName: 'Limit',
+		name: 'limit',
+		type: 'number',
+		default: 50,
+		typeOptions: { minValue: 1, maxValue: 200 },
+		description: 'Max number of results to return',
+		displayOptions: { show: { resource: ['task'], operation: ['getAll'] } },
+		routing: { request: { qs: { limit: '={{$value}}' } } },
+	},
+];

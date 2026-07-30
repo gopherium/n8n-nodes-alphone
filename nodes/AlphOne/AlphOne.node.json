@@ -1,0 +1,10 @@
+{
+	"node": "n8n-nodes-alphone.alphOne",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": ["Sales", "Productivity"],
+	"resources": {
+		"credentialDocumentation": [{ "url": "https://docs.alph.one/reference/rest-api/" }],
+		"primaryDocumentation": [{ "url": "https://docs.alph.one/guides/automation/" }]
+	}
+}
