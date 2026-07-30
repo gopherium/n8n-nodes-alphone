@@ -1,0 +1,74 @@
+{
+	"name": "AlphOne overdue task digest",
+	"nodes": [
+		{
+			"parameters": {},
+			"id": "3f000000-0000-4000-8000-000000000001",
+			"name": "Run manually",
+			"type": "n8n-nodes-base.manualTrigger",
+			"typeVersion": 1,
+			"position": [0, 180]
+		},
+		{
+			"parameters": {
+				"rule": {
+					"interval": [
+						{
+							"field": "hours",
+							"triggerAtHour": 8
+						}
+					]
+				}
+			},
+			"id": "3f000000-0000-4000-8000-000000000002",
+			"name": "Every morning",
+			"type": "n8n-nodes-base.scheduleTrigger",
+			"typeVersion": 1.2,
+			"position": [0, 0]
+		},
+		{
+			"parameters": {
+				"resource": "task",
+				"operation": "getAll",
+				"filterBy": "due_before",
+				"dueBefore": "={{ $now.toFormat('yyyy-MM-dd') }}",
+				"status": "open",
+				"limit": 200
+			},
+			"id": "3f000000-0000-4000-8000-000000000003",
+			"name": "Fetch overdue tasks",
+			"type": "n8n-nodes-alphone.alphOne",
+			"typeVersion": 1,
+			"position": [240, 90],
+			"credentials": {
+				"alphOneApi": {
+					"id": "REPLACE_WITH_YOUR_CREDENTIAL",
+					"name": "AlphOne API"
+				}
+			}
+		},
+		{
+			"parameters": {
+				"jsCode": "const tasks = $input.all().map((item) => item.json);\nif (tasks.length === 0) {\n\treturn [{ json: { overdue: 0, digest: 'Nothing overdue, the list is clear.' } }];\n}\nconst lines = tasks.map((task) => `- ${task.title} (due ${task.due_on})`);\nreturn [{ json: { overdue: tasks.length, digest: `${tasks.length} task(s) overdue:\\n${lines.join('\\n')}` } }];"
+			},
+			"id": "3f000000-0000-4000-8000-000000000004",
+			"name": "Build the digest",
+			"type": "n8n-nodes-base.code",
+			"typeVersion": 2,
+			"position": [480, 90]
+		}
+	],
+	"connections": {
+		"Every morning": {
+			"main": [[{ "node": "Fetch overdue tasks", "type": "main", "index": 0 }]]
+		},
+		"Run manually": {
+			"main": [[{ "node": "Fetch overdue tasks", "type": "main", "index": 0 }]]
+		},
+		"Fetch overdue tasks": {
+			"main": [[{ "node": "Build the digest", "type": "main", "index": 0 }]]
+		}
+	},
+	"settings": {},
+	"active": false
+}

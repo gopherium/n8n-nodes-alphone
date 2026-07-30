@@ -1,0 +1,51 @@
+{
+	"name": "AlphOne WhatsApp message to task",
+	"nodes": [
+		{
+			"parameters": {
+				"events": ["whatsapp.message.received"]
+			},
+			"id": "4a000000-0000-4000-8000-000000000001",
+			"name": "AlphOne Trigger",
+			"type": "n8n-nodes-alphone.alphOneTrigger",
+			"typeVersion": 1,
+			"position": [0, 0],
+			"webhookId": "00000000-0000-4000-8000-000000000000",
+			"credentials": {
+				"alphOneApi": {
+					"id": "REPLACE_WITH_YOUR_CREDENTIAL",
+					"name": "AlphOne API"
+				}
+			}
+		},
+		{
+			"parameters": {
+				"resource": "task",
+				"operation": "create",
+				"title": "=Reply to {{ $json.data.contact_name }}: {{ $json.data.text }}",
+				"dueOn": "={{ $now.toFormat('yyyy-MM-dd') }}",
+				"additionalFields": {
+					"contact_id": "={{ $json.data.contact_id }}"
+				}
+			},
+			"id": "4a000000-0000-4000-8000-000000000002",
+			"name": "Create reply task",
+			"type": "n8n-nodes-alphone.alphOne",
+			"typeVersion": 1,
+			"position": [240, 0],
+			"credentials": {
+				"alphOneApi": {
+					"id": "REPLACE_WITH_YOUR_CREDENTIAL",
+					"name": "AlphOne API"
+				}
+			}
+		}
+	],
+	"connections": {
+		"AlphOne Trigger": {
+			"main": [[{ "node": "Create reply task", "type": "main", "index": 0 }]]
+		}
+	},
+	"settings": {},
+	"active": false
+}

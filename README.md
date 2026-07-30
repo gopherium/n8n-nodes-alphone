@@ -92,6 +92,24 @@ Creating a task needs a title and a due date. Due dates are calendar days,
 `YYYY-MM-DD`, not timestamps, so rescheduling is day arithmetic in your own
 timezone.
 
+## Example workflows
+
+Two ready-made workflows live in [examples](examples). Import one from the n8n
+canvas menu, then open each AlphOne node and pick your credential, which the
+files leave as a placeholder.
+
+- [overdue-task-digest.json](examples/overdue-task-digest.json) collects the
+  tasks you have not finished and builds a message from them, every morning at
+  eight. Swap the final node for Slack, Gmail, or Telegram to deliver it.
+- [whatsapp-message-to-task.json](examples/whatsapp-message-to-task.json)
+  creates a task the moment a WhatsApp message arrives, linked to the contact
+  AlphOne resolved it to, so the reply lands on the right day and the right
+  person.
+
+The second one needs the AlphOne WhatsApp plugin configured. Activate the
+workflow before testing it: an inactive trigger has no subscription, so
+AlphOne has nowhere to deliver.
+
 ## Releasing
 
 Publishing runs in GitHub Actions with an npm provenance attestation, which
