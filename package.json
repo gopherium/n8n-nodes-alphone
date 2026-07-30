@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-alphone",
-  "version": "0.1.0",
+  "version": "0.0.0",
   "description": "Read and write AlphOne CRM tasks and contacts, and trigger workflows from AlphOne events",
   "license": "MIT",
   "homepage": "https://alph.one",
