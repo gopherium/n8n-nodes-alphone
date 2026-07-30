@@ -1,76 +1,96 @@
 # n8n-nodes-alphone
 
-This is an n8n community node. It lets you use GitHub Issues in your n8n workflows.
+This is an n8n community node. It lets you use [AlphOne](https://alph.one) in
+your n8n workflows.
 
-[n8n](https://n8n.io/) is a [fair-code licensed](https://docs.n8n.io/sustainable-use-license/) workflow automation platform.
+AlphOne is a self-hosted, task-centric CRM. Everything its interface does goes
+through a JSON API, so anything you can do in the app you can automate here.
+
+[n8n](https://n8n.io/) is a [fair-code licensed](https://docs.n8n.io/sustainable-use-license/)
+workflow automation platform.
 
 [Installation](#installation)
 [Operations](#operations)
 [Credentials](#credentials)
 [Compatibility](#compatibility)
 [Usage](#usage)
+[Releasing](#releasing)
 [Resources](#resources)
 
 ## Installation
 
-Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes/installation/) in the n8n community nodes documentation.
+Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes/installation/)
+in the n8n community nodes documentation.
 
 ## Operations
 
-- Issues
-    - Get an issue
-    - Get many issues in a repository
-    - Create a new issue
-- Issue Comments
-    - Get many issue comments
+- Task
+  - Create a task
+  - Get a task
+  - Get many tasks, filtered by day, by overdue cutoff, or by contact
+  - Update a task
+  - Complete a task
+- Contact
+  - Create a contact
+  - Get a contact with its channel identities
+  - Get many contacts, with optional search
+  - Rename a contact
 
 ## Credentials
 
-You can use either access token or OAuth2 to use this node.
+AlphOne authenticates programs with an API token. Create one on the machine
+running AlphOne:
 
-### Access token
+```sh
+alphone token create -email you@example.com -name n8n
+```
 
-1. Open your GitHub profile [Settings](https://github.com/settings/profile).
-2. In the left navigation, select [Developer settings](https://github.com/settings/apps).
-3. In the left navigation, under Personal access tokens, select Tokens (classic).
-4. Select Generate new token > Generate new token (classic).
-5. Enter a descriptive name for your token in the Note field, like n8n integration.
-6. Select the Expiration you'd like for the token, or select No expiration.
-7. Select Scopes for your token. For most of the n8n GitHub nodes, add the `repo` scope.
-    - A token without assigned scopes can only access public information.
-8. Select Generate token.
-9. Copy the token.
+The secret prints once and is stored only as a hash, so keep it somewhere safe.
+A token acts as the user who created it. Revoke one with
+`alphone token revoke`.
 
-Refer to [Creating a personal access token (classic)](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic) for more information. Refer to Scopes for OAuth apps for more information on GitHub scopes.
+Add an AlphOne API credential in n8n with two fields:
 
-![Generated Access token in GitHub](https://docs.github.com/assets/cb-17251/mw-1440/images/help/settings/personal-access-tokens.webp)
+- **Base URL**, where AlphOne answers, with no trailing slash
+- **API Token**, the secret printed above
 
-### OAuth2
+Use the credential's test button to confirm the connection before building a
+workflow.
 
-If you're self-hosting n8n, create a new GitHub [OAuth app](https://docs.github.com/en/apps/oauth-apps):
+### Reaching AlphOne from a container
 
-1. Open your GitHub profile [Settings](https://github.com/settings/profile).
-2. In the left navigation, select [Developer settings](https://github.com/settings/apps).
-3. In the left navigation, select OAuth apps.
-4. Select New OAuth App.
-    - If you haven't created an app before, you may see Register a new application instead. Select it.
-5. Enter an Application name, like n8n integration.
-6. Enter the Homepage URL for your app's website.
-7. If you'd like, add the optional Application description, which GitHub displays to end-users.
-8. From n8n, copy the OAuth Redirect URL and paste it into the GitHub Authorization callback URL.
-9. Select Register application.
-10. Copy the Client ID and Client Secret this generates and add them to your n8n credential.
+Inside a container, `localhost` means the container itself, never your machine.
+Point the base URL at `http://host.docker.internal:8080` instead. Docker Engine
+on Linux does not provide that name by default, so add it to the n8n service:
 
-Refer to the [GitHub Authorizing OAuth apps documentation](https://docs.github.com/en/apps/oauth-apps/using-oauth-apps/authorizing-oauth-apps) for more information on the authorization process.
+```yaml
+extra_hosts:
+  - 'host.docker.internal:host-gateway'
+```
+
+If AlphOne and n8n share a compose project, use the service name instead, such
+as `http://alphone:8080`.
 
 ## Compatibility
 
-Compatible with n8n@1.60.0 or later
+Tested with n8n 2.33.2 and AlphOne 0.4.2.
 
-## Resources
+## Usage
 
-* [n8n community nodes documentation](https://docs.n8n.io/integrations/#community-nodes)
-* [GitHub API docs](https://docs.github.com/en/rest/issues)
+Listing tasks takes exactly one filter: a day, an overdue cutoff, or a contact.
+Dates accept expressions, so a morning digest of today's work reads:
+
+```text
+Filter By: Due On A Day
+Date:      {{ $now.toFormat('yyyy-MM-dd') }}
+```
+
+Get Many returns the records themselves rather than the response envelope, so
+the next node receives one item per task or contact.
+
+Creating a task needs a title and a due date. Due dates are calendar days,
+`YYYY-MM-DD`, not timestamps, so rescheduling is day arithmetic in your own
+timezone.
 
 ## Releasing
 
@@ -86,3 +106,9 @@ works too.
 To release, run `npm run release` locally. It lints, builds, bumps the
 version, updates the changelog, commits, tags, and pushes. The tag triggers
 the publish workflow.
+
+## Resources
+
+- [n8n community nodes documentation](https://docs.n8n.io/integrations/#community-nodes)
+- [AlphOne REST API reference](https://docs.alph.one/reference/rest-api/)
+- [AlphOne automation guide](https://docs.alph.one/guides/automation/)
