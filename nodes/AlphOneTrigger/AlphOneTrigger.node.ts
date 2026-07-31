@@ -119,8 +119,11 @@ export class AlphOneTrigger implements INodeType {
 				if (data.webhookId) {
 					try {
 						await callAlphOne(this, 'DELETE', `/api/webhooks/${data.webhookId}`);
-					} catch {
-						// the stale subscription is already gone
+					} catch (error) {
+						this.logger.warn('AlphOne Trigger could not revoke its previous subscription', {
+							webhookId: data.webhookId,
+							error,
+						});
 					}
 					delete data.webhookId;
 					delete data.secret;
@@ -139,8 +142,11 @@ export class AlphOneTrigger implements INodeType {
 				if (data.webhookId) {
 					try {
 						await callAlphOne(this, 'DELETE', `/api/webhooks/${data.webhookId}`);
-					} catch {
-						// revoking an absent subscription is fine
+					} catch (error) {
+						this.logger.warn('AlphOne Trigger could not revoke its subscription', {
+							webhookId: data.webhookId,
+							error,
+						});
 					}
 					delete data.webhookId;
 					delete data.secret;
