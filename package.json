@@ -26,6 +26,7 @@
     "dev": "n8n-node dev",
     "lint": "n8n-node lint",
     "lint:fix": "n8n-node lint --fix",
+    "lint:complexity": "eslint --config eslint.complexity.mjs .",
     "test": "vitest run",
     "release": "n8n-node release",
     "prepublishOnly": "n8n-node prerelease"
@@ -51,6 +52,7 @@
   "devDependencies": {
     "@n8n/node-cli": "*",
     "eslint": "9.32.0",
+    "eslint-plugin-sonarjs": "^4.2.0",
     "release-it": "^19.0.4",
     "typescript": "5.9.2",
     "vitest": "^4.1.10"
