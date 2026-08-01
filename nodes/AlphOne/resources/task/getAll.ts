@@ -21,6 +21,7 @@ export const getAllDescription: INodeProperties[] = [
 		type: 'string',
 		default: '={{ $now.toFormat(\'yyyy-MM-dd\') }}',
 		placeholder: 'YYYY-MM-DD',
+		description: 'The calendar day to list, as YYYY-MM-DD',
 		displayOptions: { show: { resource: ['task'], operation: ['getAll'], filterBy: ['date'] } },
 		routing: { request: { qs: { date: '={{$value}}' } } },
 	},
@@ -30,6 +31,7 @@ export const getAllDescription: INodeProperties[] = [
 		type: 'string',
 		default: '={{ $now.toFormat(\'yyyy-MM-dd\') }}',
 		placeholder: 'YYYY-MM-DD',
+		description: 'Lists open tasks due earlier than this day, as YYYY-MM-DD',
 		displayOptions: { show: { resource: ['task'], operation: ['getAll'], filterBy: ['due_before'] } },
 		routing: { request: { qs: { due_before: '={{$value}}' } } },
 	},
@@ -38,6 +40,8 @@ export const getAllDescription: INodeProperties[] = [
 		name: 'contactId',
 		type: 'string',
 		default: '',
+		description:
+			'The uuid of an existing contact, from an AlphOne event or a contact lookup. Never guess it and never use a name, search for the contact first.',
 		displayOptions: { show: { resource: ['task'], operation: ['getAll'], filterBy: ['contact_id'] } },
 		routing: { request: { qs: { contact_id: '={{$value}}' } } },
 	},
@@ -46,6 +50,7 @@ export const getAllDescription: INodeProperties[] = [
 		name: 'status',
 		type: 'options',
 		default: 'open',
+		description: 'Which tasks to include',
 		displayOptions: { show: { resource: ['task'], operation: ['getAll'] } },
 		options: [
 			{ name: 'Open', value: 'open' },

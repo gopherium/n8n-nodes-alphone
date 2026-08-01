@@ -48,6 +48,8 @@ const fields: INodeProperties[] = [
 		type: 'string',
 		default: '',
 		required: true,
+		description:
+			'The uuid of an existing contact, from an AlphOne event or a contact lookup. Never guess it and never use a name, search for the contact first.',
 		displayOptions: { show: { resource: ['contact'], operation: ['get', 'rename'] } },
 	},
 	{

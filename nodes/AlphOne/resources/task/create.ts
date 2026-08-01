@@ -28,6 +28,7 @@ export const createDescription: INodeProperties[] = [
 		type: 'collection',
 		placeholder: 'Add Field',
 		default: {},
+		description: 'Optional, a field you leave out is not set on the task',
 		displayOptions: { show: { resource: ['task'], operation: ['create'] } },
 		options: [
 			{
@@ -35,7 +36,8 @@ export const createDescription: INodeProperties[] = [
 				name: 'contact_id',
 				type: 'string',
 				default: '',
-				description: 'The contact this task is about',
+				description:
+					'The uuid of an existing contact, from an AlphOne event or a contact lookup. Omit it unless you already hold one, never guess and never use a name.',
 				routing: { request: { body: { contact_id: '={{$value}}' } } },
 			},
 			{
