@@ -35,6 +35,10 @@ in the n8n community nodes documentation.
   - Get a contact with its channel identities
   - Get many contacts, with optional search
   - Rename a contact
+- Import
+  - Get an import with its columns, its mapping, and its counts
+  - Get many imports, newest first
+  - Get the contacts an import created, each with the row that created it
 
 ## Credentials
 
@@ -92,11 +96,24 @@ Creating a task needs a title and a due date. Due dates are calendar days,
 `YYYY-MM-DD`, not timestamps, so rescheduling is day arithmetic in your own
 timezone.
 
+Task creation takes an optional Origin Event ID, the uuid of whatever the task
+answers. AlphOne stores one task per origin, so a workflow that runs twice on
+the same event gets the task it already created instead of a duplicate. Import
+rows carry a `row_id` meant for exactly this, which is what makes an import
+workflow safe to re-run after a failure halfway through.
+
+Get Contacts on the Import resource returns one item per contact the import
+created, each carrying `contact_id`, `name`, and the `row_id` that created it.
+Feed those items into Loop Over Items to spread the work over days: with a
+batch size of twenty and a due date of `{{ $now.plus({ days: $runIndex
+}).toFormat('yyyy-MM-dd') }}`, the first twenty contacts are due today, the
+next twenty tomorrow, and so on.
+
 ## Example workflows
 
-Two ready-made workflows live in [examples](examples). Import one from the n8n
-canvas menu, then open each AlphOne node and pick your credential, which the
-files leave as a placeholder.
+Three ready-made workflows live in [examples](examples). Import one from the
+n8n canvas menu, then open each AlphOne node and pick your credential, which
+the files leave as a placeholder.
 
 - [overdue-task-digest.json](examples/overdue-task-digest.json) collects the
   tasks you have not finished and builds a message from them, every morning at
@@ -106,9 +123,16 @@ files leave as a placeholder.
   AlphOne resolved it to, so the reply lands on the right day and the right
   person.
 
-The second one needs the AlphOne WhatsApp plugin configured. Activate the
-workflow before testing it: an inactive trigger has no subscription, so
-AlphOne has nowhere to deliver.
+- [import-to-daily-tasks.json](examples/import-to-daily-tasks.json) turns a
+  finished contact import into a call list spread over days. It waits for
+  `import.completed`, reads the contacts that import created, and creates one
+  task per contact in batches of twenty, dating each batch a day later than the
+  one before. Every task carries its import row as the origin event, so
+  re-running the workflow creates nothing twice.
+
+The WhatsApp one needs the AlphOne WhatsApp plugin configured, and the import
+one needs the importer plugin. Activate a workflow before testing it: an
+inactive trigger has no subscription, so AlphOne has nowhere to deliver.
 
 ## Releasing
 

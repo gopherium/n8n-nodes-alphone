@@ -2,7 +2,8 @@
 	"$schema": "https://unpkg.com/knip@6/schema.json",
 	"entry": [
 		"nodes/**/*.node.ts",
-		"credentials/**/*.credentials.ts"
+		"credentials/**/*.credentials.ts",
+		"**/*.test.ts"
 	],
 	"project": [
 		"**/*.ts"

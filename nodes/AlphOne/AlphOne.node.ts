@@ -1,6 +1,7 @@
 import { NodeConnectionTypes, type INodeType, type INodeTypeDescription } from 'n8n-workflow';
 import { taskDescription } from './resources/task';
 import { contactDescription } from './resources/contact';
+import { importDescription } from './resources/import';
 
 export class AlphOne implements INodeType {
 	description: INodeTypeDescription = {
@@ -10,7 +11,7 @@ export class AlphOne implements INodeType {
 		group: ['input'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
-		description: 'Read and write AlphOne CRM tasks and contacts',
+		description: 'Read and write from your AlphOne CRM instance',
 		defaults: {
 			name: 'AlphOne',
 		},
@@ -40,10 +41,12 @@ export class AlphOne implements INodeType {
 				options: [
 					{ name: 'Task', value: 'task' },
 					{ name: 'Contact', value: 'contact' },
+					{ name: 'Import', value: 'import' },
 				],
 			},
 			...taskDescription,
 			...contactDescription,
+			...importDescription,
 		],
 	};
 }

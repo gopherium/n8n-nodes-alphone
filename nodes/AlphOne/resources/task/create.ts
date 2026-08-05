@@ -41,6 +41,15 @@ export const createDescription: INodeProperties[] = [
 				routing: { request: { body: { contact_id: '={{$value}}' } } },
 			},
 			{
+				displayName: 'Origin Event ID',
+				name: 'origin_event_id',
+				type: 'string',
+				default: '',
+				description:
+					'The uuid of what this task answers, an import row ID or an AlphOne event ID. It makes the creation repeatable, a second create with the same ID returns the task already stored instead of a duplicate. Never guess it, omit it unless you already hold one.',
+				routing: { request: { body: { origin_event_id: '={{$value}}' } } },
+			},
+			{
 				displayName: 'Priority',
 				name: 'priority',
 				type: 'number',

@@ -73,6 +73,12 @@ export class AlphOneTrigger implements INodeType {
 							'A contact was created, including one created by an inbound message from an unknown number',
 					},
 					{
+						name: 'Import Completed',
+						value: 'import.completed',
+						description:
+							'A contact import finished, carrying the import ID and how many rows it imported and skipped',
+					},
+					{
 						name: 'Task Completed',
 						value: 'task.completed',
 						description: 'A task moved into done',

@@ -1,0 +1,90 @@
+{
+	"name": "AlphOne import to daily tasks",
+	"nodes": [
+		{
+			"parameters": {
+				"events": ["import.completed"]
+			},
+			"id": "5a000000-0000-4000-8000-000000000001",
+			"name": "AlphOne Trigger",
+			"type": "n8n-nodes-alphone.alphOneTrigger",
+			"typeVersion": 1,
+			"position": [0, 0],
+			"webhookId": "00000000-0000-4000-8000-000000000001",
+			"credentials": {
+				"alphOneApi": {
+					"id": "REPLACE_WITH_YOUR_CREDENTIAL",
+					"name": "AlphOne API"
+				}
+			}
+		},
+		{
+			"parameters": {
+				"resource": "import",
+				"operation": "getContacts",
+				"importId": "={{ $json.data.id }}"
+			},
+			"id": "5a000000-0000-4000-8000-000000000002",
+			"name": "Get the imported contacts",
+			"type": "n8n-nodes-alphone.alphOne",
+			"typeVersion": 1,
+			"position": [240, 0],
+			"credentials": {
+				"alphOneApi": {
+					"id": "REPLACE_WITH_YOUR_CREDENTIAL",
+					"name": "AlphOne API"
+				}
+			}
+		},
+		{
+			"parameters": {
+				"batchSize": 20,
+				"options": {}
+			},
+			"id": "5a000000-0000-4000-8000-000000000003",
+			"name": "Batch of twenty",
+			"type": "n8n-nodes-base.splitInBatches",
+			"typeVersion": 3,
+			"position": [480, 0]
+		},
+		{
+			"parameters": {
+				"resource": "task",
+				"operation": "create",
+				"title": "=Call {{ $json.name }}",
+				"dueOn": "={{ $now.plus({ days: $runIndex }).toFormat('yyyy-MM-dd') }}",
+				"additionalFields": {
+					"contact_id": "={{ $json.contact_id }}",
+					"origin_event_id": "={{ $json.row_id }}"
+				}
+			},
+			"id": "5a000000-0000-4000-8000-000000000004",
+			"name": "Create the call task",
+			"type": "n8n-nodes-alphone.alphOne",
+			"typeVersion": 1,
+			"position": [720, 100],
+			"credentials": {
+				"alphOneApi": {
+					"id": "REPLACE_WITH_YOUR_CREDENTIAL",
+					"name": "AlphOne API"
+				}
+			}
+		}
+	],
+	"connections": {
+		"AlphOne Trigger": {
+			"main": [[{ "node": "Get the imported contacts", "type": "main", "index": 0 }]]
+		},
+		"Get the imported contacts": {
+			"main": [[{ "node": "Batch of twenty", "type": "main", "index": 0 }]]
+		},
+		"Batch of twenty": {
+			"main": [[], [{ "node": "Create the call task", "type": "main", "index": 0 }]]
+		},
+		"Create the call task": {
+			"main": [[{ "node": "Batch of twenty", "type": "main", "index": 0 }]]
+		}
+	},
+	"settings": {},
+	"active": false
+}
