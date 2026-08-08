@@ -77,7 +77,7 @@ as `http://alphone:8080`.
 
 ## Compatibility
 
-Tested with n8n 2.33.2 and AlphOne 0.4.2.
+Tested with n8n 2.33.6 and AlphOne 0.6.0.
 
 ## Usage
 
