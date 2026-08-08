@@ -4,7 +4,8 @@ This is an n8n community node. It lets you use [AlphOne](https://alph.one) in
 your n8n workflows.
 
 AlphOne is a self-hosted, task-centric CRM. Everything its interface does goes
-through a JSON API, so anything you can do in the app you can automate here.
+through one GraphQL API, so anything you can do in the app you can automate
+here.
 
 [n8n](https://n8n.io/) is a [fair-code licensed](https://docs.n8n.io/sustainable-use-license/)
 workflow automation platform.
@@ -77,7 +78,12 @@ as `http://alphone:8080`.
 
 ## Compatibility
 
-Tested with n8n 2.33.6 and AlphOne 0.6.0.
+This node speaks AlphOne's GraphQL API, which arrived in AlphOne 0.7.0. Point
+it at an older instance and every operation fails.
+
+Tested with n8n 2.33.6 and AlphOne 0.7.0. Version 0.2.x of this node speaks the
+REST API and keeps working against AlphOne 0.6.x and 0.7.x, so an instance you
+have not upgraded yet can stay on it.
 
 ## Usage
 

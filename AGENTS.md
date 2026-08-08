@@ -81,6 +81,20 @@ project _may_ contain example nodes and/or credentials that need to be
   CHANGELOG.md** in the root of the repository
 - Read `.agents/workflow.md` for more info
 
+## AlphOne transport
+
+Every operation posts one GraphQL document to `/api/graphql`. Build the routing
+with `graphItems` or `graphPage` from `nodes/AlphOne/graph.ts` rather than
+writing a request by hand, and send every parameter as a graph variable through
+`routing.send.property` under `variables.`.
+
+Two contracts the tests hold you to:
+
+- Items keep the field names the REST API used, so `dueOn` reaches a workflow
+  as `due_on`. The helpers rename every key on the way out.
+- A page costs `limit * (fields + 2)` and AlphOne rejects an operation priced
+  over 2500, so a list document has room for ten fields at a limit of 200.
+
 ## Context-specific docs
 Load these before working on the relevant area:
 
