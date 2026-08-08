@@ -6,6 +6,9 @@ import type {
 	INodeProperties,
 } from 'n8n-workflow';
 
+/** versionQuery is the smallest graph operation an authenticated caller can run. */
+const versionQuery = 'query NodeCredentialTest { version }';
+
 export class AlphOneApi implements ICredentialType {
 	name = 'alphOneApi';
 
@@ -50,8 +53,11 @@ export class AlphOneApi implements ICredentialType {
 	test: ICredentialTestRequest = {
 		request: {
 			baseURL: '={{$credentials.baseUrl}}',
-			url: '/api/version',
-			method: 'GET',
+			url: '/api/graphql',
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: { query: versionQuery },
+			json: true,
 		},
 	};
 }
