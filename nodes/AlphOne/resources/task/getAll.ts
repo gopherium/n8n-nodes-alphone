@@ -23,7 +23,7 @@ export const getAllDescription: INodeProperties[] = [
 		placeholder: 'YYYY-MM-DD',
 		description: 'The calendar day to list, as YYYY-MM-DD',
 		displayOptions: { show: { resource: ['task'], operation: ['getAll'], filterBy: ['date'] } },
-		routing: { request: { qs: { date: '={{$value}}' } } },
+		routing: { send: { type: 'body', property: 'variables.date' } },
 	},
 	{
 		displayName: 'Due Before',
@@ -33,7 +33,7 @@ export const getAllDescription: INodeProperties[] = [
 		placeholder: 'YYYY-MM-DD',
 		description: 'Lists open tasks due earlier than this day, as YYYY-MM-DD',
 		displayOptions: { show: { resource: ['task'], operation: ['getAll'], filterBy: ['due_before'] } },
-		routing: { request: { qs: { due_before: '={{$value}}' } } },
+		routing: { send: { type: 'body', property: 'variables.dueBefore' } },
 	},
 	{
 		displayName: 'Contact ID',
@@ -43,7 +43,7 @@ export const getAllDescription: INodeProperties[] = [
 		description:
 			'The uuid of an existing contact, from an AlphOne event or a contact lookup. Never guess it and never use a name, search for the contact first.',
 		displayOptions: { show: { resource: ['task'], operation: ['getAll'], filterBy: ['contact_id'] } },
-		routing: { request: { qs: { contact_id: '={{$value}}' } } },
+		routing: { send: { type: 'body', property: 'variables.contactId' } },
 	},
 	{
 		displayName: 'Status',
@@ -57,7 +57,7 @@ export const getAllDescription: INodeProperties[] = [
 			{ name: 'Done', value: 'done' },
 			{ name: 'All', value: 'all' },
 		],
-		routing: { request: { qs: { status: '={{$value}}' } } },
+		routing: { send: { type: 'body', property: 'variables.status' } },
 	},
 	{
 		displayName: 'Limit',
@@ -67,6 +67,6 @@ export const getAllDescription: INodeProperties[] = [
 		typeOptions: { minValue: 1, maxValue: 200 },
 		description: 'Max number of results to return',
 		displayOptions: { show: { resource: ['task'], operation: ['getAll'] } },
-		routing: { request: { qs: { limit: '={{$value}}' } } },
+		routing: { send: { type: 'body', property: 'variables.first' } },
 	},
 ];

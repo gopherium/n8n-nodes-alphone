@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { INodeProperties, INodePropertyOptions } from 'n8n-workflow';
+import type { IDataObject, INodeProperties, INodePropertyOptions } from 'n8n-workflow';
 
 import { AlphOne } from './AlphOne.node';
 
@@ -28,6 +28,11 @@ function operation(value: string): INodePropertyOptions {
 	return found;
 }
 
+/** Returns the document one import operation posts. */
+function documentOf(value: string): string {
+	return String((operation(value).routing?.request?.body as IDataObject).query);
+}
+
 describe('the import resource', () => {
 	it('is offered next to the tasks and contacts', () => {
 		const resources = (property('resource', 'import').options ?? []) as INodePropertyOptions[];
@@ -36,29 +41,15 @@ describe('the import resource', () => {
 	});
 
 	it('lists every import', () => {
-		expect(operation('getAll').routing?.request).toEqual({
-			method: 'GET',
-			url: '/api/plugins/importer/imports',
-		});
+		expect(documentOf('getAll')).toContain('imports {');
 	});
 
 	it('reads one import by id', () => {
-		expect(operation('get').routing?.request).toEqual({
-			method: 'GET',
-			url: '=/api/plugins/importer/imports/{{$parameter["importId"]}}',
-		});
+		expect(documentOf('get')).toContain('importJob(id: $id)');
 	});
 
-	it('unwraps the contacts an import created', () => {
-		const routing = operation('getContacts').routing;
-
-		expect(routing?.request).toEqual({
-			method: 'GET',
-			url: '=/api/plugins/importer/imports/{{$parameter["importId"]}}/contacts',
-		});
-		expect(routing?.output?.postReceive).toEqual([
-			{ type: 'rootProperty', properties: { property: 'contacts' } },
-		]);
+	it('reads the contacts an import created', () => {
+		expect(documentOf('getContacts')).toContain('contacts { contactId name rowId }');
 	});
 
 	it('asks for an import id only where one is read', () => {
@@ -85,6 +76,6 @@ describe('the task origin', () => {
 		const originEventId = additionalField('origin_event_id');
 
 		expect(originEventId.displayName).toBe('Origin Event ID');
-		expect(originEventId.routing?.request?.body).toEqual({ origin_event_id: '={{$value}}' });
+		expect(originEventId.routing?.send?.property).toBe('variables.originEventId');
 	});
 });

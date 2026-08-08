@@ -9,7 +9,7 @@ export const createDescription: INodeProperties[] = [
 		required: true,
 		description: 'What the task is',
 		displayOptions: { show: { resource: ['task'], operation: ['create'] } },
-		routing: { request: { body: { title: '={{$value}}' } } },
+		routing: { send: { type: 'body', property: 'variables.title' } },
 	},
 	{
 		displayName: 'Due On',
@@ -20,7 +20,7 @@ export const createDescription: INodeProperties[] = [
 		placeholder: 'YYYY-MM-DD',
 		description: 'The calendar day the task is due, not a timestamp',
 		displayOptions: { show: { resource: ['task'], operation: ['create'] } },
-		routing: { request: { body: { due_on: '={{$value}}' } } },
+		routing: { send: { type: 'body', property: 'variables.dueOn' } },
 	},
 	{
 		displayName: 'Additional Fields',
@@ -38,7 +38,7 @@ export const createDescription: INodeProperties[] = [
 				default: '',
 				description:
 					'The uuid of an existing contact, from an AlphOne event or a contact lookup. Omit it unless you already hold one, never guess and never use a name.',
-				routing: { request: { body: { contact_id: '={{$value}}' } } },
+				routing: { send: { type: 'body', property: 'variables.contactId' } },
 			},
 			{
 				displayName: 'Origin Event ID',
@@ -47,7 +47,7 @@ export const createDescription: INodeProperties[] = [
 				default: '',
 				description:
 					'The uuid of what this task answers, an import row ID or an AlphOne event ID. It makes the creation repeatable, a second create with the same ID returns the task already stored instead of a duplicate. Never guess it, omit it unless you already hold one.',
-				routing: { request: { body: { origin_event_id: '={{$value}}' } } },
+				routing: { send: { type: 'body', property: 'variables.originEventId' } },
 			},
 			{
 				displayName: 'Priority',
@@ -56,7 +56,7 @@ export const createDescription: INodeProperties[] = [
 				default: 0,
 				typeOptions: { minValue: 0, maxValue: 9 },
 				description: 'From 0 to 9, where 0 is normal',
-				routing: { request: { body: { priority: '={{$value}}' } } },
+				routing: { send: { type: 'body', property: 'variables.priority' } },
 			},
 		],
 	},

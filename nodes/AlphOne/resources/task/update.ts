@@ -10,6 +10,7 @@ export const updateDescription: INodeProperties[] = [
 		description:
 			'The uuid of an existing task, from an AlphOne event or a task lookup. Never guess it, look the task up first.',
 		displayOptions: { show: { resource: ['task'], operation: ['update', 'get', 'complete'] } },
+		routing: { send: { type: 'body', property: 'variables.id' } },
 	},
 	{
 		displayName: 'Update Fields',
@@ -27,7 +28,7 @@ export const updateDescription: INodeProperties[] = [
 				default: '',
 				placeholder: 'YYYY-MM-DD',
 				description: 'The calendar day to move the task to, as YYYY-MM-DD',
-				routing: { request: { body: { due_on: '={{$value}}' } } },
+				routing: { send: { type: 'body', property: 'variables.dueOn' } },
 			},
 			{
 				displayName: 'Priority',
@@ -36,7 +37,7 @@ export const updateDescription: INodeProperties[] = [
 				default: 0,
 				typeOptions: { minValue: 0, maxValue: 9 },
 				description: 'From 0 to 9, where 0 is normal',
-				routing: { request: { body: { priority: '={{$value}}' } } },
+				routing: { send: { type: 'body', property: 'variables.priority' } },
 			},
 			{
 				displayName: 'Status',
@@ -48,7 +49,7 @@ export const updateDescription: INodeProperties[] = [
 					{ name: 'Open', value: 'open' },
 					{ name: 'Done', value: 'done' },
 				],
-				routing: { request: { body: { status: '={{$value}}' } } },
+				routing: { send: { type: 'body', property: 'variables.status' } },
 			},
 			{
 				displayName: 'Title',
@@ -56,7 +57,7 @@ export const updateDescription: INodeProperties[] = [
 				type: 'string',
 				default: '',
 				description: 'What the task is',
-				routing: { request: { body: { title: '={{$value}}' } } },
+				routing: { send: { type: 'body', property: 'variables.title' } },
 			},
 		],
 	},
