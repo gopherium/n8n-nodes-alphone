@@ -331,6 +331,16 @@ describe('the user resource', () => {
 		expect(items).toEqual([{ id: 'u1', email: 'maria@example.com', name: 'Maria Perez' }]);
 	});
 
+	it('asks for the account behind the token, with nothing to fill in', () => {
+		const document = documentOf('user', 'getCurrent');
+		const body = routingOf('user', 'getCurrent').request?.body as IDataObject;
+
+		expect(document).toMatch(/\bme \{ id email name \}/);
+		expect(document).not.toContain('$');
+		expect(document).not.toContain('(');
+		expect(Object.keys(body)).toEqual(['query']);
+	});
+
 	it('offers only the current account, so no id can be guessed into it', () => {
 		const fields = everyField().filter(
 			(field) =>
