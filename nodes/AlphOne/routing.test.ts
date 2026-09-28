@@ -321,3 +321,33 @@ describe('the import resource', () => {
 		expect(items).toEqual([{ contact_id: 'c1', name: 'Maria Perez', row_id: 'r1' }]);
 	});
 });
+
+describe('the user resource', () => {
+	it('reads the account the credential acts as', async () => {
+		const items = await received('user', 'getCurrent', {
+			data: { me: { id: 'u1', email: 'maria@example.com', name: 'Maria Perez' } },
+		});
+
+		expect(items).toEqual([{ id: 'u1', email: 'maria@example.com', name: 'Maria Perez' }]);
+	});
+
+	it('offers only the current account, so no id can be guessed into it', () => {
+		const fields = everyField().filter(
+			(field) =>
+				field.name !== 'operation' &&
+				(field.displayOptions?.show?.resource ?? []).includes('user'),
+		);
+
+		expect(operationsOf('user').map((option) => option.value)).toEqual(['getCurrent']);
+		expect(fields).toEqual([]);
+	});
+
+	it('fails when the graph refuses the account rather than emitting a blank item', async () => {
+		await expect(
+			received('user', 'getCurrent', {
+				data: null,
+				errors: [{ message: 'authentication required' }],
+			}),
+		).rejects.toThrow('authentication required');
+	});
+});
