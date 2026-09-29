@@ -27,3 +27,9 @@ describe('the events a workflow can start on', () => {
 		expect(silent).toEqual([]);
 	});
 });
+
+describe('the trigger in the node picker', () => {
+	it('stays out of the AI tool picker, since a trigger cannot be called as a tool', () => {
+		expect(new AlphOneTrigger().description.usableAsTool).toBeUndefined();
+	});
+});
