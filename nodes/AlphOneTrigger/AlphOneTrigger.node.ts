@@ -100,7 +100,6 @@ export class AlphOneTrigger implements INodeType {
 		defaults: {
 			name: 'AlphOne Trigger',
 		},
-		usableAsTool: true,
 		inputs: [],
 		outputs: [NodeConnectionTypes.Main],
 		credentials: [
