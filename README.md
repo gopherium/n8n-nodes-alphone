@@ -40,6 +40,8 @@ in the n8n community nodes documentation.
   - Get an import with its columns, its mapping, and its counts
   - Get many imports, newest first
   - Get the contacts an import created, each with the row that created it
+- User
+  - Get the current user, the account the credential acts as
 
 ## Credentials
 

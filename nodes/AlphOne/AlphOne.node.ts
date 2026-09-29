@@ -2,6 +2,7 @@ import { NodeConnectionTypes, type INodeType, type INodeTypeDescription } from '
 import { taskDescription } from './resources/task';
 import { contactDescription } from './resources/contact';
 import { importDescription } from './resources/import';
+import { userDescription } from './resources/user';
 
 export class AlphOne implements INodeType {
 	description: INodeTypeDescription = {
@@ -42,11 +43,13 @@ export class AlphOne implements INodeType {
 					{ name: 'Task', value: 'task' },
 					{ name: 'Contact', value: 'contact' },
 					{ name: 'Import', value: 'import' },
+					{ name: 'User', value: 'user' },
 				],
 			},
 			...taskDescription,
 			...contactDescription,
 			...importDescription,
+			...userDescription,
 		],
 	};
 }
