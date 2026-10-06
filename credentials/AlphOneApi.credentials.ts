@@ -37,7 +37,7 @@ export class AlphOneApi implements ICredentialType {
 			default: '',
 			required: true,
 			description:
-				'Create one with: alphone token create -email you@example.com -name n8n. The secret is shown once.',
+				'Create one on the API tokens screen in AlphOne, or with: alphone token:create -email you@example.com -name n8n. The secret is shown once. The AlphOne Trigger needs a token of an admin account.',
 		},
 	];
 
