@@ -5,7 +5,7 @@ import { AlphOneTrigger } from './AlphOneTrigger.node';
 
 type StaticData = { webhookId?: string; secret?: string };
 
-type GraphAnswer = { data?: IDataObject; errors?: { message: string }[] };
+type GraphAnswer = { data?: IDataObject; errors?: { message: string; extensions?: IDataObject }[] };
 
 const methods = new AlphOneTrigger().webhookMethods!.default;
 
@@ -82,6 +82,32 @@ describe('subscribing the trigger', () => {
 
 		await expect(methods.create.call(context)).rejects.toThrow('webhook: invalid url');
 
+		expect(staticData).toEqual({});
+	});
+
+	it('names the missing capability when the credential cannot manage webhooks', async () => {
+		const { context, staticData } = fakeHooks([
+			{
+				errors: [
+					{
+						message: 'admin required',
+						extensions: {
+							code: 'UNAUTHORIZED',
+							reason: 'capability_missing',
+							scope: 'webhooks:write',
+							capability: 'manage_webhooks',
+						},
+					},
+				],
+			},
+		]);
+
+		const refused = await methods.create.call(context).catch((error: unknown) => error);
+
+		expect(refused).toMatchObject({
+			message: "This credential's AlphOne account cannot manage webhooks",
+			description: expect.stringContaining('an admin'),
+		});
 		expect(staticData).toEqual({});
 	});
 });

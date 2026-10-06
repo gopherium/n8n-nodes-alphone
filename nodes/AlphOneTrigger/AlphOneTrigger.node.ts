@@ -15,7 +15,22 @@ type StaticData = { webhookId?: string; secret?: string };
 
 type Subscription = { id: string; url: string; events: string[] };
 
-type GraphAnswer = { data?: IDataObject; errors?: { message: string }[] };
+type GraphError = { message: string; extensions?: { reason?: string; capability?: string } };
+
+type GraphAnswer = { data?: IDataObject; errors?: GraphError[] };
+
+/** Returns the message and description the trigger shows for one error AlphOne answered. */
+function explainError(error: GraphError): { message: string; description?: string } {
+	const { reason, capability } = error.extensions ?? {};
+	if (reason === 'capability_missing' && capability === 'manage_webhooks') {
+		return {
+			message: "This credential's AlphOne account cannot manage webhooks",
+			description:
+				'The AlphOne Trigger needs a token of an account holding manage_webhooks, which is an admin in a stock AlphOne. Give this node a credential with an admin token. The action nodes can keep a member token.',
+		};
+	}
+	return { message: error.message };
+}
 
 const webhooksDocument = `
 	query NodeWebhooks {
@@ -54,7 +69,7 @@ async function callGraph(
 	})) as GraphAnswer;
 	const [first] = answer.errors ?? [];
 	if (first) {
-		throw new NodeApiError(context.getNode(), answer as JsonObject, { message: first.message });
+		throw new NodeApiError(context.getNode(), answer as JsonObject, explainError(first));
 	}
 	return answer.data ?? {};
 }
