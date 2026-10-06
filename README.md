@@ -45,16 +45,23 @@ in the n8n community nodes documentation.
 
 ## Credentials
 
-AlphOne authenticates programs with an API token. Create one on the machine
-running AlphOne:
+AlphOne authenticates programs with an API token. Create one on the API tokens
+screen in AlphOne, or on the machine running AlphOne:
 
 ```sh
-alphone token create -email you@example.com -name n8n
+alphone token:create -email you@example.com -name n8n
 ```
 
 The secret prints once and is stored only as a hash, so keep it somewhere safe.
-A token acts as the user who created it. Revoke one with
-`alphone token revoke`.
+A token acts as the user who created it. Revoke one on the same screen, or with
+`alphone token:revoke -email you@example.com -id <id> -yes`.
+
+The **AlphOne Trigger** creates its webhook with the credential's token, and
+from AlphOne 0.27.0 only an account holding `manage_webhooks` may do that,
+which is an admin in a stock install. Mint the trigger's token for an admin.
+The action nodes work with a member's token, so a team can keep them on a
+member's credential and give the trigger a second credential with an admin's
+token.
 
 Add an AlphOne API credential in n8n with two fields:
 
@@ -86,6 +93,11 @@ it at an older instance and every operation fails.
 Tested with n8n 2.33.6 and AlphOne 0.7.0. Version 0.2.x of this node speaks the
 REST API and keeps working against AlphOne 0.6.x and 0.7.x, so an instance you
 have not upgraded yet can stay on it.
+
+From AlphOne 0.27.0, the trigger needs a credential whose account holds
+`manage_webhooks`, and AlphOne delivers webhooks only to public addresses
+unless its operator lists the n8n host in `ALPHONE_WEBHOOK_ALLOWED_HOSTS`,
+such as `n8n:5678` when both share a compose project.
 
 ## Usage
 
