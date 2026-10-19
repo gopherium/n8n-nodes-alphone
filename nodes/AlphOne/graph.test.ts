@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import type {
+	DeclarativeRestApiSettings,
 	IDataObject,
+	IExecutePaginationFunctions,
 	IExecuteSingleFunctions,
 	IHttpRequestOptions,
 	IN8nHttpFullResponse,
@@ -9,7 +11,7 @@ import type {
 	INodePropertyRouting,
 } from 'n8n-workflow';
 
-import { graphItems, graphPage } from './graph';
+import { allPages, graphItems, graphPage } from './graph';
 
 type PostReceiveFunction = (
 	this: IExecuteSingleFunctions,
@@ -152,5 +154,76 @@ describe('a graph connection operation', () => {
 		const items = await received(routing, { data: { tasks: { edges: [] } } });
 
 		expect(items).toEqual([]);
+	});
+});
+
+type PaginationFunction = (
+	this: IExecutePaginationFunctions,
+	requestData: DeclarativeRestApiSettings.ResultOptions,
+) => Promise<INodeExecutionData[]>;
+
+/** Returns the items a routing reads from the given pages, with the variables each request carried. */
+async function paged(
+	routing: INodePropertyRouting,
+	pages: INodeExecutionData[][],
+): Promise<{ items: IDataObject[]; asked: IDataObject[] }> {
+	const asked: IDataObject[] = [];
+	const paging = {
+		...context,
+		makeRoutingRequest: async (requestData: DeclarativeRestApiSettings.ResultOptions) => {
+			asked.push({ ...(requestData.options.body as { variables: IDataObject }).variables });
+			return pages.shift() ?? [];
+		},
+	} as unknown as IExecutePaginationFunctions;
+	const requestData = {
+		options: {
+			url: '',
+			body: { ...(routing.request?.body as IDataObject), variables: { id: 'a' } },
+		},
+	} as DeclarativeRestApiSettings.ResultOptions;
+	const items = await (routing.operations?.pagination as PaginationFunction).call(
+		paging,
+		requestData,
+	);
+	return { items: items.map((item) => item.json), asked };
+}
+
+describe('a graph operation reading every page', () => {
+	const routing = allPages(
+		graphItems(
+			'query NodeRows($id: UUID!, $offset: Int) { importJob(id: $id) { rows(offset: $offset) { id } } }',
+			'importJob.rows',
+		),
+	);
+
+	it('reads its answer like a single read', async () => {
+		const items = await received(routing, {
+			data: { importJob: { rows: [{ id: 'a', rowId: 'b' }] } },
+		});
+
+		expect(items).toEqual([{ id: 'a', row_id: 'b' }]);
+		expect(routing.send?.paginate).toBe(true);
+	});
+
+	it('asks from each offset until a page comes back empty', async () => {
+		const { items, asked } = await paged(routing, [
+			[{ json: { id: 'a' } }, { json: { id: 'b' } }],
+			[{ json: { id: 'c' } }],
+			[],
+		]);
+
+		expect(items).toEqual([{ id: 'a' }, { id: 'b' }, { id: 'c' }]);
+		expect(asked).toEqual([
+			{ id: 'a', offset: 0 },
+			{ id: 'a', offset: 2 },
+			{ id: 'a', offset: 3 },
+		]);
+	});
+
+	it('answers with no items when the first page is empty', async () => {
+		const { items, asked } = await paged(routing, [[]]);
+
+		expect(items).toEqual([]);
+		expect(asked).toEqual([{ id: 'a', offset: 0 }]);
 	});
 });

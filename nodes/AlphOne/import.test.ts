@@ -48,8 +48,14 @@ describe('the import resource', () => {
 		expect(documentOf('get')).toContain('importJob(id: $id)');
 	});
 
-	it('reads the contacts an import created', () => {
-		expect(documentOf('getContacts')).toContain('contacts { contactId name rowId }');
+	it('reads every page of the contacts an import created', () => {
+		const routing = operation('getContacts').routing;
+
+		expect(documentOf('getContacts')).toContain(
+			'contacts(offset: $offset) { contactId name rowId }',
+		);
+		expect(routing?.send?.paginate).toBe(true);
+		expect(routing?.operations?.pagination).toBeTypeOf('function');
 	});
 
 	it('asks for an import id only where one is read', () => {
