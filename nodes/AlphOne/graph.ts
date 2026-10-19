@@ -1,6 +1,8 @@
 import {
 	NodeApiError,
+	type DeclarativeRestApiSettings,
 	type IDataObject,
+	type IExecutePaginationFunctions,
 	type IExecuteSingleFunctions,
 	type IHttpRequestOptions,
 	type IN8nHttpFullResponse,
@@ -129,4 +131,38 @@ export function graphItems(document: string, path: string): INodePropertyRouting
 /** Returns the routing reading one connection of a document's answer. */
 export function graphPage(document: string, field: string): INodePropertyRouting {
 	return graphRouting(document, [failOnGraphErrors, readValue(`${field}.edges`), unwrapNodes]);
+}
+
+/** Returns the items of the page that follows the items read so far. */
+async function nextPage(
+	paging: IExecutePaginationFunctions,
+	requestData: DeclarativeRestApiSettings.ResultOptions,
+	read: INodeExecutionData[],
+): Promise<INodeExecutionData[]> {
+	const body = requestData.options.body as { variables?: IDataObject };
+	body.variables = { ...body.variables, offset: read.length };
+	return await paging.makeRoutingRequest(requestData);
+}
+
+/** Returns the items of every page, asking from each offset until a page comes back empty. */
+async function everyPage(
+	this: IExecutePaginationFunctions,
+	requestData: DeclarativeRestApiSettings.ResultOptions,
+): Promise<INodeExecutionData[]> {
+	const items: INodeExecutionData[] = [];
+	let page = await nextPage(this, requestData, items);
+	while (page.length > 0) {
+		items.push(...page);
+		page = await nextPage(this, requestData, items);
+	}
+	return items;
+}
+
+/** Returns a routing that reads every page of what the given routing reads once. */
+export function allPages(routing: INodePropertyRouting): INodePropertyRouting {
+	return {
+		...routing,
+		send: { ...routing.send, paginate: true },
+		operations: { pagination: everyPage },
+	};
 }

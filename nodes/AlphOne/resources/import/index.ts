@@ -1,5 +1,5 @@
 import type { INodeProperties } from 'n8n-workflow';
-import { graphItems } from '../../graph';
+import { allPages, graphItems } from '../../graph';
 
 /** importFields is the import shape every import operation answers with. */
 const importFields = `
@@ -31,9 +31,9 @@ const importDocument = `
 `;
 
 const importContactsDocument = `
-	query NodeImportContacts($id: UUID!) {
+	query NodeImportContacts($id: UUID!, $offset: Int) {
 		importJob(id: $id) {
-			contacts { contactId name rowId }
+			contacts(offset: $offset) { contactId name rowId }
 		}
 	}
 `;
@@ -60,7 +60,7 @@ const operations: INodeProperties[] = [
 				action: 'Get the contacts of an import',
 				description:
 					'Read the contacts an import created, each with the ID of the row that created it. Use that row ID as the origin event ID of any task you create, so a replay creates no second task.',
-				routing: graphItems(importContactsDocument, 'importJob.contacts'),
+				routing: allPages(graphItems(importContactsDocument, 'importJob.contacts')),
 			},
 			{
 				name: 'Get Many',

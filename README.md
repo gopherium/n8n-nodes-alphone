@@ -99,6 +99,10 @@ From AlphOne 0.27.0, the trigger needs a credential whose account holds
 unless its operator lists the n8n host in `ALPHONE_WEBHOOK_ALLOWED_HOSTS`,
 such as `n8n:5678` when both share a compose project.
 
+From version 0.5.0 of this node, Get Contacts on the Import resource reads the
+contacts a page at a time, which needs AlphOne 0.29.0. Against an older
+instance it fails with `Unknown argument "offset"`.
+
 ## Usage
 
 Listing tasks takes exactly one filter: a day, an overdue cutoff, or a contact.
@@ -124,6 +128,7 @@ workflow safe to re-run after a failure halfway through.
 
 Get Contacts on the Import resource returns one item per contact the import
 created, each carrying `contact_id`, `name`, and the `row_id` that created it.
+It reads every page AlphOne answers, so a large import arrives whole.
 Feed those items into Loop Over Items to spread the work over days: with a
 batch size of twenty and a due date of `{{ $now.plus({ days: $runIndex
 }).toFormat('yyyy-MM-dd') }}`, the first twenty contacts are due today, the
